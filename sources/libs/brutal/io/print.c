@@ -42,6 +42,87 @@ PrintValue print_val_pointer(void *ptr)
     return (PrintValue){nullstr, PRINT_POINTER, {._pointer = ptr}};
 }
 
+int print_color_id(FmtColor color)
+{
+    int result = 0;
+
+    switch (color.type)
+    {
+    case FMT_BLACK:
+        result = 0;
+        break;
+    case FMT_RED:
+        result = 1;
+        break;
+    case FMT_GREEN:
+        result = 2;
+        break;
+    case FMT_YELLOW:
+        result = 3;
+        break;
+    case FMT_BLUE:
+        result = 4;
+        break;
+    case FMT_MAGENTA:
+        result = 5;
+        break;
+    case FMT_CYAN:
+        result = 6;
+        break;
+    case FMT_WHITE:
+        return 7 + 60;
+    case FMT_GRAY:
+        result = 7;
+        break;
+    case FMT_BLACK_GRAY:
+        return 0 + 60;
+    case FMT_COL_NONE:
+        return -1;
+    }
+
+    if (color.bright)
+    {
+        return result + 60;
+    }
+    return result;
+}
+
+static IoResult print_start_style(IoWriter writer, FmtStyle style)
+{
+    size_t written = 0;
+    if (style.bold)
+    {
+        written += TRY(IoResult, io_write_str(writer, str$("\033[1m")));
+    }
+    if (style.underline)
+    {
+        written += TRY(IoResult, io_write_str(writer, str$("\033[4m")));
+    }
+
+    int fg_id = print_color_id(style.fg_color);
+    if (fg_id != -1)
+    {
+        written += TRY(IoResult, io_write_str(writer, str$("\033[")));
+        written += TRY(IoResult, fmt_signed((Fmt){}, writer, fg_id + 30));
+        written += TRY(IoResult, io_write_str(writer, str$("m")));
+    }
+
+    int bg_id = print_color_id(style.bg_color);
+    if (bg_id != -1)
+    {
+        written += TRY(IoResult, io_write_str(writer, str$("\033[")));
+        written += TRY(IoResult, fmt_signed((Fmt){}, writer, bg_id + 40));
+        written += TRY(IoResult, io_write_str(writer, str$("m")));
+    }
+
+    return OK(IoResult, written);
+}
+
+static IoResult print_end_style(IoWriter writer)
+{
+    return io_write_str(writer, str$("\033[0m"));
+}
+
 IoResult print_dispatch(IoWriter writer, Fmt fmt, PrintValue value)
 {
     switch (value.type)
@@ -81,8 +162,6 @@ IoResult print_dispatch(IoWriter writer, Fmt fmt, PrintValue value)
     default:
         panic$("No formater for value of type {}", value.type)
     }
-
-    return OK(IoResult, 0);
 }
 
 IoResult print_impl(IoWriter writer, Str format, PrintArgs args)
@@ -109,6 +188,11 @@ IoResult print_impl(IoWriter writer, Str format, PrintArgs args)
         {
             Fmt fmt = fmt_parse(&scan);
 
+            if (fmt.style.has_style)
+            {
+                written += TRY(IoResult, print_start_style(writer, fmt.style));
+            }
+
             if (current < args.count)
             {
                 written += TRY(IoResult, print_dispatch(writer, fmt, args.values[current]));
@@ -118,6 +202,10 @@ IoResult print_impl(IoWriter writer, Str format, PrintArgs args)
                 written += TRY(IoResult, io_write_str(writer, str$("{}")));
             }
 
+            if (fmt.style.has_style)
+            {
+                written += TRY(IoResult, print_end_style(writer));
+            }
             current++;
         }
         else if (scan_curr(&scan) == '\\' && skip_fmt == false)

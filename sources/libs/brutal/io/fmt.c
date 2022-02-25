@@ -50,7 +50,66 @@ static char fmt_prefix(Fmt self)
     }
 }
 
-static void fmt_pase_case(Fmt *fmt, Scan *scan)
+const char* color_table[] = {
+    [FMT_COL_NONE] = "none",
+    [FMT_BLACK] = "black",
+    [FMT_RED] = "red",
+    [FMT_WHITE] = "white",
+    [FMT_GREEN] = "green",
+    [FMT_BLUE] = "blue",
+    [FMT_YELLOW] = "yellow",
+    [FMT_MAGENTA] = "magenta",
+    [FMT_CYAN] = "cyan",
+    [FMT_GRAY] = "gray",
+    [FMT_BLACK_GRAY] = "dark-gray"
+};
+
+static FmtColor fmt_parse_color(Scan *scan)
+{
+    FmtColor col = {};
+    if (scan_skip_word(scan, str$("light-")))
+    {
+        col.bright = true;
+    }
+
+    for(size_t i = 0; i < sizeof(color_table) / sizeof(color_table[0]); i++)
+    {
+        if(scan_skip_word(scan, str$(color_table[i])))
+        {
+            col.type = (FmtColorTypes)i;
+            break;
+        }
+    }
+
+    return col;
+}
+
+static bool fmt_parse_style(Fmt *fmt, Scan *scan)
+{
+    if (scan_skip_word(scan, str$("underline")))
+    {
+        fmt->style.underline = true;
+        return true;
+    }
+    else if (scan_skip_word(scan, str$("bold")))
+    {
+        fmt->style.bold = true;
+        return true;
+    }
+    else if (scan_skip_word(scan, str$("bg-")))
+    {
+        fmt->style.bg_color = fmt_parse_color(scan);
+        return true;
+    }
+    else if (scan_skip_word(scan, str$("fg-")))
+    {
+        fmt->style.fg_color = fmt_parse_color(scan);
+        return true;
+    }
+    return false;
+}
+
+static void fmt_parse_case(Fmt *fmt, Scan *scan)
 {
     if (scan_skip_word(scan, str$("default")))
     {
@@ -197,13 +256,17 @@ Fmt fmt_parse(Scan *scan)
             scan_next(scan);
             fmt.prefix = true;
         }
+        else if(fmt_parse_style(&fmt, scan))
+        {
+            fmt.style.has_style = true;
+        }
         else if (scan_curr(scan) >= '0' && scan_curr(scan) <= '9')
         {
             fmt_parse_min_width(&fmt, scan);
         }
         else if (scan_skip_word(scan, str$("case:")))
         {
-            fmt_pase_case(&fmt, scan);
+            fmt_parse_case(&fmt, scan);
         }
         else
         {
