@@ -1,18 +1,12 @@
 #pragma once
 
+#include <brutal/parse/ref.h>
 #include <brutal/text/str.h>
 
 #define LEXEME_EOF (-1)
 #define LEXEME_INVALID (-2)
 
 typedef int LexemeType;
-
-typedef struct
-{
-    uintptr_t translation_unit;
-    int begin;
-    int end;
-} SrcRef;
 
 typedef struct
 {
