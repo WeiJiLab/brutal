@@ -1,8 +1,8 @@
 #pragma once
 
-#include <brutal/base.h>
 #include <brutal/ds.h>
 #include <cc/ast/expr.h>
+
 typedef enum
 {
     CSTMT_INVALID,
@@ -33,7 +33,7 @@ typedef struct _CStmt CStmt;
 
 struct _CStmt
 {
-    CRef ref;
+    SrcRef ref;
     CStmtType type;
 
     union
@@ -96,5 +96,3 @@ struct _CStmt
         } case_;
     };
 };
-
-Str cstmt_type_to_str(CStmtType type);

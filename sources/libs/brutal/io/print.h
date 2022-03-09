@@ -37,7 +37,7 @@ struct _PrintValue
 #ifndef __freestanding__
         double _float;
 #endif
-        Str _string;
+        Str _str;
         void *_pointer;
         char _char;
     };
@@ -51,7 +51,7 @@ PrintValue print_val_unsigned(FmtUInt);
 PrintValue print_val_float(double);
 #endif
 
-PrintValue print_val_string(Str);
+PrintValue print_val_str(Str);
 
 PrintValue print_val_cstring(char const *);
 
@@ -81,7 +81,7 @@ PrintValue print_val_pointer(void *);
         char*: print_val_cstring,               \
         char const*: print_val_cstring,         \
         char: print_val_char,                   \
-        Str: print_val_string,                  \
+        Str: print_val_str,                  \
         void*: print_val_pointer                \
     )(VALUE),
 
@@ -103,7 +103,7 @@ PrintValue print_val_pointer(void *);
         char*: print_val_cstring,               \
         char const*: print_val_cstring,         \
         char: print_val_char,                   \
-        Str: print_val_string,                  \
+        Str: print_val_str,                  \
         void*: print_val_pointer                \
     )(VALUE),
 

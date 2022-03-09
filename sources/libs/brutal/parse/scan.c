@@ -152,11 +152,39 @@ bool scan_skip_word(Scan *self, Str word)
     return true;
 }
 
+bool scan_skip_word_nc(Scan *self, Str word)
+{
+    for (size_t i = 0; i < word.len; i++)
+    {
+        if (tolower(scan_peek(self, i)) != tolower(word.buf[i]))
+        {
+            return false;
+        }
+    }
+
+    scan_next_n(self, word.len);
+    return true;
+}
+
 bool scan_skip_any(Scan *self, Str chars)
 {
     for (size_t i = 0; i < chars.len; i++)
     {
         if (scan_curr(self) == chars.buf[i])
+        {
+            scan_next(self);
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool scan_skip_any_nc(Scan *self, Str chars)
+{
+    for (size_t i = 0; i < chars.len; i++)
+    {
+        if (tolower(scan_curr(self)) == tolower(chars.buf[i]))
         {
             scan_next(self);
             return true;

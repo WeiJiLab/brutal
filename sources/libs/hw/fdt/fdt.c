@@ -42,7 +42,7 @@ static FdtNode fdt_tok2node(FdtTokBegin *raw_node, FdtHeader *header)
 
 static FdtProp fdt_tok2prop(FdtTokProp *raw_prop, FdtHeader *header)
 {
-    Str node_name = str$((char const *)((uintptr_t)header + load_be(header->strings_offset) + load_be(raw_prop->name_offset)));
+    Str node_name = str$((char const *)((uintptr_t)header + load_be(header->strs_offset) + load_be(raw_prop->name_offset)));
 
     return (FdtProp){
         .name = node_name,
@@ -270,8 +270,8 @@ static void fdt_dump_props_value(FdtProp *prop, Emit *out)
     }
     if (prop->value.len > 2)
     {
-        Str as_string = str_n$(prop->value.len, (char *)prop->value.buf);
-        emit_fmt(out, "- as string: {} \n", as_string);
+        Str as_str = str_n$(prop->value.len, (char *)prop->value.buf);
+        emit_fmt(out, "- as str: {} \n", as_str);
     }
 
     emit_fmt(out, "- as data: ");

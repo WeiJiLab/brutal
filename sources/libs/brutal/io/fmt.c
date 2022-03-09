@@ -50,7 +50,7 @@ static char fmt_prefix(Fmt self)
     }
 }
 
-const char* color_table[] = {
+const char *color_table[] = {
     [FMT_COL_NONE] = "none",
     [FMT_BLACK] = "black",
     [FMT_RED] = "red",
@@ -61,8 +61,7 @@ const char* color_table[] = {
     [FMT_MAGENTA] = "magenta",
     [FMT_CYAN] = "cyan",
     [FMT_GRAY] = "gray",
-    [FMT_BLACK_GRAY] = "dark-gray"
-};
+    [FMT_BLACK_GRAY] = "dark-gray"};
 
 static FmtColor fmt_parse_color(Scan *scan)
 {
@@ -72,9 +71,9 @@ static FmtColor fmt_parse_color(Scan *scan)
         col.bright = true;
     }
 
-    for(size_t i = 0; i < sizeof(color_table) / sizeof(color_table[0]); i++)
+    for (size_t i = 0; i < sizeof(color_table) / sizeof(color_table[0]); i++)
     {
-        if(scan_skip_word(scan, str$(color_table[i])))
+        if (scan_skip_word(scan, str$(color_table[i])))
         {
             col.type = (FmtColorTypes)i;
             break;
@@ -256,7 +255,7 @@ Fmt fmt_parse(Scan *scan)
             scan_next(scan);
             fmt.prefix = true;
         }
-        else if(fmt_parse_style(&fmt, scan))
+        else if (fmt_parse_style(&fmt, scan))
         {
             fmt.style.has_style = true;
         }
@@ -439,7 +438,7 @@ IoResult fmt_char(Fmt self, IoWriter writer, unsigned int character)
     return OK(IoResult, written);
 }
 
-IoResult fmt_string(Fmt self, IoWriter writer, Str value)
+IoResult fmt_str(Fmt self, IoWriter writer, Str value)
 {
     if (self.casing == CASE_DEFAULT)
     {

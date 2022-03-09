@@ -24,7 +24,7 @@ PrintValue print_val_float(MAYBE_UNUSED double val)
 
 PrintValue print_val_cstring(char const *val)
 {
-    return (PrintValue){nullstr, PRINT_STRING, {._string = str$(val)}};
+    return (PrintValue){nullstr, PRINT_STRING, {._str = str$(val)}};
 }
 
 PrintValue print_val_char(char val)
@@ -32,9 +32,9 @@ PrintValue print_val_char(char val)
     return (PrintValue){nullstr, PRINT_CHAR, {._char = val}};
 }
 
-PrintValue print_val_string(Str val)
+PrintValue print_val_str(Str val)
 {
-    return (PrintValue){nullstr, PRINT_STRING, {._string = val}};
+    return (PrintValue){nullstr, PRINT_STRING, {._str = val}};
 }
 
 PrintValue print_val_pointer(void *ptr)
@@ -152,7 +152,7 @@ IoResult print_dispatch(IoWriter writer, Fmt fmt, PrintValue value)
         return fmt_float(fmt, writer, value._float);
 #endif
     case PRINT_STRING:
-        return fmt_string(fmt, writer, value._string);
+        return fmt_str(fmt, writer, value._str);
 
     case PRINT_POINTER:
         return fmt_unsigned(fmt, writer, (uintptr_t)value._pointer);

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <brutal/base.h>
 #include <cc/ast/type.h>
 #include <cc/ast/val.h>
 
@@ -97,12 +96,13 @@ typedef struct
 
 struct _CExpr
 {
-    CRef ref;
+    SrcRef ref;
     CExprType type;
     CType sema_type;
+
     union
     {
-        CVal constant_; /* instead of Cval holding sema_type the cexpr holds it */
+        CVal constant_;
         Str ident_;
 
         struct
@@ -150,13 +150,3 @@ struct _CExpr
         } lambda_;
     };
 };
-
-COp str_to_cop(Str str);
-
-Str cop_to_str(COp type);
-
-Str cexpr_type_to_str(CExprType type);
-
-int cop_pre(COp cop);
-
-int cexpr_pre(CExpr *expr);

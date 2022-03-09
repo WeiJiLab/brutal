@@ -73,6 +73,6 @@ IoResult fmt_unsigned(Fmt self, IoWriter writer, FmtUInt value);
 IoResult fmt_float(Fmt self, IoWriter writer, double value);
 #endif
 
-IoResult fmt_string(Fmt self, IoWriter writer, Str string);
+IoResult fmt_str(Fmt self, IoWriter writer, Str str);
 
 IoResult fmt_char(Fmt self, IoWriter writer, unsigned int character);
